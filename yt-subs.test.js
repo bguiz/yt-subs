@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it, mock, beforeEach, afterEach } from 'node:test';
 
-import { extractVideoId, printResult, youtubeScript } from './yt-script.js';
+import { extractVideoId, printResult, youtubeScript } from './yt-subs.js';
 
 describe('extractVideoId', () => {
     describe('valid inputs', () => {

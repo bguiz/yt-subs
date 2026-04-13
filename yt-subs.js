@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { realpathSync as fsRealPathSync } from 'node:fs';
 import { homedir as osHomeDir } from 'node:os';
 import { resolve as pathResolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -28,7 +29,7 @@ async function youtubeScript({
     const videoId = extractVideoId(videoUrl);
 
     const ytScriptFsCache = new _FsCache(
-        pathResolve(osHomeDir(), '.yt-script-cache'),
+        pathResolve(osHomeDir(), '.yt-subs-cache'),
         86400e3, // 1 days
     );
 
@@ -120,7 +121,8 @@ async function main() {
     process.exit(0);
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+const filePath = fileURLToPath(import.meta.url);
+if (fsRealPathSync(process.argv[1]) === filePath) {
     main();
 }
 

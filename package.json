@@ -1,28 +1,32 @@
 {
-  "name": "yt-script",
-  "version": "0.0.0",
+  "name": "yt-subs",
+  "version": "0.0.1",
   "description": "downloads transcript files from youtube videos",
-  "bin": "./yt-script.js",
+  "bin": "./yt-subs.js",
+  "main": "yt-subs.js",
+  "files": [
+     "/yt-subs.js"
+  ],
   "keywords": [
     "youtube",
     "subtitles",
     "captions",
     "transcript"
   ],
-  "homepage": "https://github.com/bguiz/yt-script#readme",
+  "homepage": "https://github.com/bguiz/yt-subs#readme",
   "bugs": {
-    "url": "https://github.com/bguiz/yt-script/issues"
+    "url": "https://github.com/bguiz/yt-subs/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bguiz/yt-script.git"
+    "url": "git+https://github.com/bguiz/yt-subs.git"
   },
   "license": "MIT",
   "author": "bguiz",
   "type": "module",
-  "main": "yt-script.js",
   "scripts": {
-    "test": "node --test yt-script.test.js"
+    "test": "node --test yt-subs.test.js",
+    "list-files": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz"
   },
   "dependencies": {
     "youtube-transcript-plus": "2.0.0"
