@@ -1,0 +1,29 @@
+{
+  "name": "yt-script",
+  "version": "0.0.0",
+  "description": "downloads transcript files from youtube videos",
+  "bin": "./yt-script.js",
+  "keywords": [
+    "youtube",
+    "subtitles",
+    "captions",
+    "transcript"
+  ],
+  "homepage": "https://github.com/bguiz/yt-script#readme",
+  "bugs": {
+    "url": "https://github.com/bguiz/yt-script/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bguiz/yt-script.git"
+  },
+  "license": "MIT",
+  "author": "bguiz",
+  "type": "esm",
+  "main": "yt-script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+  }
+}
