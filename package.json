@@ -33,7 +33,7 @@
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "node --test yt-subs.*.unit.test.js",
     "test:e2e": "node --test yt-subs.*.e2e.test.js",
-    "coverage": "node --test --experimental-test-coverage --test-coverage-include=yt-subs-sdk.js yt-subs.*.unit.test.js",
+    "coverage": "node --test --experimental-test-coverage --test-coverage-include=\"yt-subs-*.js\" yt-subs.*.unit.test.js",
     "list-files": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz"
   },
   "dependencies": {
