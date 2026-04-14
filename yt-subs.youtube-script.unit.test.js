@@ -9,9 +9,9 @@ import {
     YoutubeTranscriptInvalidLangError,
 } from 'youtube-transcript-plus';
 
-import { youtubeScript } from './yt-subs-sdk.js';
+import { extractFromVideo } from './yt-subs-sdk.js';
 
-describe('youtubeScript', () => {
+describe('extractFromVideo', () => {
     const fakeVideoDetails = {
         title: 'Never Gonna Give You Up',
         description: 'Official Rick Astley music video',
@@ -40,7 +40,7 @@ describe('youtubeScript', () => {
             toPlainText: () => fakeTranscriptText,
         };
 
-        const result = await youtubeScript({
+        const result = await extractFromVideo({
             videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             _deps: deps,
         });
@@ -63,7 +63,7 @@ describe('youtubeScript', () => {
             toSRT: () => { throw new Error('toSRT should not be called'); },
             toVTT: () => { throw new Error('toVTT should not be called'); },
         };
-        await youtubeScript({ videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', _deps: deps });
+        await extractFromVideo({ videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', _deps: deps });
         assert.strictEqual(plainTextCalled, true);
     });
 
@@ -76,7 +76,7 @@ describe('youtubeScript', () => {
             toSRT: () => { toSRTCalled = true; return fakeTranscriptSRT; },
             toVTT: () => { throw new Error('toVTT should not be called'); },
         };
-        const result = await youtubeScript({
+        const result = await extractFromVideo({
             videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             options: { textType: 'srt' },
             _deps: deps,
@@ -94,7 +94,7 @@ describe('youtubeScript', () => {
             toSRT: () => { throw new Error('toSRT should not be called'); },
             toVTT: () => { toVTTCalled = true; return fakeTranscriptVTT; },
         };
-        const result = await youtubeScript({
+        const result = await extractFromVideo({
             videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             options: { textType: 'vtt' },
             _deps: deps,
@@ -114,7 +114,7 @@ describe('youtubeScript', () => {
             },
             toPlainText: () => fakeTranscriptText,
         };
-        await youtubeScript({
+        await extractFromVideo({
             videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             options: { noCache: true },
             _deps: deps,
@@ -134,7 +134,7 @@ describe('youtubeScript', () => {
             },
             toPlainText: () => fakeTranscriptText,
         };
-        await youtubeScript({
+        await extractFromVideo({
             videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             _deps: deps,
         });
@@ -152,7 +152,7 @@ describe('youtubeScript', () => {
             },
             toPlainText: () => fakeTranscriptText,
         };
-        await youtubeScript({
+        await extractFromVideo({
             videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             options: { noRetry: true },
             _deps: deps,
@@ -171,7 +171,7 @@ describe('youtubeScript', () => {
             },
             toPlainText: () => fakeTranscriptText,
         };
-        await youtubeScript({
+        await extractFromVideo({
             videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             _deps: deps,
         });
@@ -189,7 +189,7 @@ describe('youtubeScript', () => {
             },
             toPlainText: () => fakeTranscriptText,
         };
-        await youtubeScript({
+        await extractFromVideo({
             videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             options: { language: 'fr' },
             _deps: deps,
@@ -207,7 +207,7 @@ describe('youtubeScript', () => {
             },
             toPlainText: () => fakeTranscriptText,
         };
-        await youtubeScript({
+        await extractFromVideo({
             videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             _deps: deps,
         });
@@ -227,7 +227,7 @@ describe('youtubeScript', () => {
                     throw new YoutubeTranscriptVideoUnavailableError('dQw4w9WgXcQ');
                 },
             };
-            const result = await youtubeScript({
+            const result = await extractFromVideo({
                 videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 _deps: deps,
             });
@@ -241,7 +241,7 @@ describe('youtubeScript', () => {
                     throw new YoutubeTranscriptDisabledError('dQw4w9WgXcQ');
                 },
             };
-            const result = await youtubeScript({
+            const result = await extractFromVideo({
                 videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 _deps: deps,
             });
@@ -255,7 +255,7 @@ describe('youtubeScript', () => {
                     throw new YoutubeTranscriptNotAvailableError('dQw4w9WgXcQ');
                 },
             };
-            const result = await youtubeScript({
+            const result = await extractFromVideo({
                 videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 _deps: deps,
             });
@@ -269,7 +269,7 @@ describe('youtubeScript', () => {
                     throw new YoutubeTranscriptNotAvailableLanguageError('fr', ['en', 'es'], 'dQw4w9WgXcQ');
                 },
             };
-            const result = await youtubeScript({
+            const result = await extractFromVideo({
                 videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 _deps: deps,
             });
@@ -283,7 +283,7 @@ describe('youtubeScript', () => {
                     throw new YoutubeTranscriptInvalidLangError('zz');
                 },
             };
-            const result = await youtubeScript({
+            const result = await extractFromVideo({
                 videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 _deps: deps,
             });
@@ -297,7 +297,7 @@ describe('youtubeScript', () => {
                     throw new Error('network timeout');
                 },
             };
-            const result = await youtubeScript({
+            const result = await extractFromVideo({
                 videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 _deps: deps,
             });

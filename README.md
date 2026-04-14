@@ -63,7 +63,7 @@ const options = {
 **To extract the transcript**:
 
 ```js
-const result = await youtubeScript({
+const result = await extractFromVideo({
     videoUrl, // youtube URL or video ID
     options, // optional
 });

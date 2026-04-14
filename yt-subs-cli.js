@@ -4,13 +4,13 @@ import { realpathSync as fsRealPathSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import {
-    youtubeScript,
+    extractFromVideo,
     printResult,
 } from './yt-subs-sdk.js';
 
 async function ytSubsCli(input) {
     const videoUrl = input || process.argv[2];
-    const result = await youtubeScript({
+    const result = await extractFromVideo({
         videoUrl,
     });
     if (result.err) {

@@ -14,7 +14,7 @@ import {
     YoutubeTranscriptInvalidLangError,
 } from 'youtube-transcript-plus';
 
-async function youtubeScript({
+async function extractFromVideo({
     videoUrl,
     options = {},
     _deps = {},
@@ -140,7 +140,7 @@ function printResult(result) {
 }
 
 const ytSubSdk = {
-    extractFromVideo: youtubeScript,
+    extractFromVideo,
     outputTextOnly,
     outputAsMarkdown,
 };
@@ -148,7 +148,7 @@ const ytSubSdk = {
 export default ytSubSdk;
 
 export {
-    youtubeScript,
+    extractFromVideo,
     extractVideoId,
     printResult,
 };

@@ -1,6 +1,6 @@
 ---
 name: youtube-transcript-extract
-description: Extracts transcript/ captions from youtube videos (plus metadata)
+description: Extracts transcript/ captions/ subtitles from youtube videos (plus metadata)
 activates_on: ["*"]
 uses: []
 license: MIT

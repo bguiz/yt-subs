@@ -7,8 +7,8 @@
   },
   "main": "yt-subs-sdk.js",
   "files": [
-    "/yt-subs-cli.js",
-    "/yt-subs-sdk.js"
+    "/yt-subs-sdk.js",
+    "/yt-subs-cli.js"
   ],
   "keywords": [
     "youtube",
