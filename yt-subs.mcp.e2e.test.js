@@ -10,11 +10,12 @@ const VIDEO_ID = 'wd9WJ8uazVg';
 describe('ytsubs-mcp e2e', () => {
     let client;
 
-    // set up an MCP client which will run `ytsubs-mcp`,
-    // then connect to the MCP server which that command spawns, over the "Stdio" transport
+    // set up an MCP client which will run `ytsubs-mcp stdio`,
+    // then connect to the MCP server which that command spawns, over the Stdio transport
     before(async () => {
         const transport = new StdioClientTransport({
             command: 'ytsubs-mcp',
+            args: ['stdio'],
             stderr: 'pipe',
         });
         client = new Client({ name: 'test-client', version: '0.0.1' });

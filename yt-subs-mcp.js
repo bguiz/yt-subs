@@ -1,13 +1,18 @@
 #!/usr/bin/env node
+import { createServer } from 'node:http';
+import { randomUUID } from 'node:crypto';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { z } from 'zod';
 
 import { extractFromVideo } from './yt-subs-sdk.js';
 
+const transportArg = process.argv[2] ?? 'stdio';
+
 const server = new McpServer({
-  name: 'ytsubs-mcp',
-  version: '0.0.1', // TODO extract from package.json
+    name: 'ytsubs-mcp',
+    version: '0.0.1', // TODO extract from package.json
 });
 
 server.registerTool(
@@ -45,10 +50,36 @@ server.registerTool(
     },
 );
 
-async function runMcpServer() {
+async function runWithStdio() {
     const transport = new StdioServerTransport();
     await server.connect(transport);
 }
 
-runMcpServer()
-    .catch(console.error);
+async function runWithHttp() {
+    const transport = new StreamableHTTPServerTransport({
+        sessionIdGenerator: () => randomUUID(),
+    });
+    await server.connect(transport);
+
+    const httpServer = createServer((req, res) => {
+        transport.handleRequest(req, res);
+    });
+
+    await new Promise((resolve, reject) => {
+        httpServer.on('error', reject);
+        httpServer.listen(0, '127.0.0.1', () => {
+            const { port } = httpServer.address();
+            process.stderr.write(`LISTEN ${port}\n`);
+            resolve();
+        });
+    });
+}
+
+if (transportArg === 'stdio') {
+    runWithStdio().catch(console.error);
+} else if (transportArg === 'http') {
+    runWithHttp().catch(console.error);
+} else {
+    process.exitCode = 1;
+    console.error(`Error: invalid transport "${transportArg}": expected "stdio" or "http"`);
+}

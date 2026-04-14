@@ -34,6 +34,9 @@
     "test:unit": "node --test yt-subs.*.unit.test.js",
     "test:e2e": "node --test yt-subs.*.e2e.test.js",
     "coverage": "node --test --experimental-test-coverage --test-coverage-include=\"yt-subs-*.js\" yt-subs.*.unit.test.js",
+    "cli": "node yt-subs-cli.js",
+    "mcp:stdio": "node yt-subs-mcp.js stdio",
+    "mcp:http": "node yt-subs-mcp.js http",
     "list-files": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz"
   },
   "dependencies": {
