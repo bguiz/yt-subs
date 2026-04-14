@@ -116,8 +116,115 @@ Read the skill file to see how it works:
 
 ### MCP server usage
 
-<!-- TODO -->
-(Coming soon)
+This module comes with its own MCP server, which complies with
+the [Model Context Protocol specification](https://modelcontextprotocol.io/specification/2025-11-25)
+(dated 2025/11/25).
+It supports both **stdio** and **streamable HTTP** transports.
+
+**Terminal**:
+To run the MCP server in a terminal, enter the following command:
+
+```shell
+npx -y -p ytsubs ytsubs-mcp stdio # for stdio transport
+npx -y -p ytsubs ytsubs-mcp http # for streamable HTTP transport
+```
+
+**Inspector**:
+To connect using the MCP inspector tool:
+
+```shell
+MCP_AUTO_OPEN_ENABLED=false DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector $( which node ) $PWD/yt-subs-mcp.js
+```
+
+Run the above command to start an MCP client that is connected to
+the MCP server over stdio.
+You should output similar to:
+
+```text
+🚀 MCP Inspector is up and running at:
+   http://localhost:6274
+```
+
+Visit that URL in a browser, press the "connect" button,
+then press the "list tools" button,
+then press the "youtube-transcript-extract" button,
+and finally, press the "run tool" button.
+
+In the "history" pane, you should see a new invocation of "tools/call".
+Expand the view from this using the triangular icon,
+and yopu will be able to see both the request and response in full.
+
+**Programmatically**:
+To run and connect programmatically from Node.JS:
+
+Import MCP modules.
+
+```js
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+```
+
+For MCP over *stdio*, initialise a `transport` object like this (simple):
+
+```js
+const transport = new StdioClientTransport({
+    command: 'ytsubs-mcp',
+    args: ['stdio'],
+    stderr: 'pipe',
+});
+```
+
+For MCP over *streamable HTTP*, initialise a `transport` object like this (complex):
+
+```js
+serverProcess = spawn(
+    'ytsubs-mcp',
+    ['http'], {
+        stdio: ['ignore', 'ignore', 'pipe'],
+    },
+);
+
+let port;
+try {
+    port = await new Promise((resolve, reject) => {
+        let stderr = '';
+        serverProcess.stderr.on('data', (chunk) => {
+            stderr += chunk.toString();
+            const match = stderr.match(/LISTEN (\d+)/);
+            if (match) {
+                resolve(parseInt(match[1], 10));
+            }
+        });
+        serverProcess.on('error', reject);
+        serverProcess.on('close', (code) => {
+            reject(new Error(`server exited (code ${code}) before announcing port`));
+        });
+    });
+} catch (err) {
+    if (err.code === 'ENOENT') {
+        assert.fail('ytsubs-mcp not found on PATH — run in the project directory: npm link');
+    }
+    throw err;
+}
+
+const transport = new StreamableHTTPClientTransport(
+    new URL(`http://127.0.0.1:${port}/mcp`),
+);
+```
+
+Then create na MCP client that connects to the `transport`.
+
+```js
+client = new Client({ name: 'test-client', version: '0.0.1' });
+await client.connect(transport);
+
+// interact with MCP server using client
+await client.listTools();
+await client.callTool({
+    name: 'youtube-transcript-extract',
+    arguments: { videoUrl: VIDEO_URL },
+});
+```
 
 ## Contributing
 
