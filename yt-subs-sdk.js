@@ -123,9 +123,16 @@ function outputTextOnly(result) {
 
 function outputAsMarkdown(result) {
     const displayDate = (new Date()).toISOString().slice(0, 19);
+    let thumbnailUrl = '';
+    thumbnailUrl = result.metadata?.thumbnails
+        ?.filter((tn) => (tn.width >= 480))[0]
+        ?.url;
     let out = '';
     out = out +(`# ${result.title}\n`);
-    out = out +(`Retrieved from ${result.videoUrl} on ${displayDate}Z`);
+    if (thumbnailUrl) {
+        out = out +(`\n![${result.title}](${thumbnailUrl})\n`);
+    }
+    out = out +(`\n> Retrieved from ${result.videoUrl} on ${displayDate}Z via ytsubs`);
     out = out +('\n\n## Metadata\n');
     out = out +(JSON.stringify(result.metadata));
     out = out +('\n\n## Description\n')

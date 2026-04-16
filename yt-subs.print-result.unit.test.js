@@ -32,7 +32,7 @@ describe('printResult', () => {
         assert.ok(output.startsWith(`# ${result.title}\n`));
         assert.match(
             output,
-            /Retrieved from https:\/\/www\.youtube\.com\/watch\?v=dQw4w9WgXcQ on \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/,
+            /> Retrieved from https:\/\/www\.youtube\.com\/watch\?v=dQw4w9WgXcQ on \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z via ytsubs/,
         );
         assert.ok(output.includes('\n\n## Metadata\n'));
         assert.ok(output.includes(JSON.stringify(result.metadata)));
