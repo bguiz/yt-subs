@@ -54,7 +54,7 @@ Optionally, create an options object to override defaults:
 ```js
 const options = {
     noCache: true, // default: false - saves in `.yt-subs-cache` under home
-    toRetry: true, // default: false - if first attempt fails, retry with backoff
+    noRetry: true, // default: false - if first attempt fails, retry with backoff
     language: 'es', // default: 'en' - can be any 2-letter language code
     textType: 'srt', // default: 'text' - can be 'text', 'srt', or 'vtt'
 };

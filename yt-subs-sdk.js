@@ -156,6 +156,8 @@ export default ytSubSdk;
 
 export {
     extractFromVideo,
+    outputTextOnly,
+    outputAsMarkdown,
     extractVideoId,
     printResult,
 };
