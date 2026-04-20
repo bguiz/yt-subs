@@ -1,6 +1,6 @@
 {
   "name": "ytsubs",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "downloads transcript files from youtube videos",
   "bin": {
     "ytsubs": "yt-subs-cli.js",

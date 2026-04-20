@@ -19,9 +19,30 @@ describe('extractVideoId', () => {
             );
         });
 
+        it('extracts ID from youtube.com watch URL with extra params and anchor', () => {
+            assert.strictEqual(
+                extractVideoId('https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLxxx&index=1#comments'),
+                'dQw4w9WgXcQ',
+            );
+        });
+
+        it('extracts ID from m.youtube.com (mobile) URL with extra params and anchor', () => {
+            assert.strictEqual(
+                extractVideoId('https://m.youtube.com/watch?v=dQw4w9WgXcQ&pp=ajebQw%3D%3D#something'),
+                'dQw4w9WgXcQ',
+            );
+        });
+
         it('extracts ID from youtu.be short URL', () => {
             assert.strictEqual(
                 extractVideoId('https://youtu.be/dQw4w9WgXcQ'),
+                'dQw4w9WgXcQ',
+            );
+        });
+
+        it('extracts ID from youtu.be short URL with extra params and anchor', () => {
+            assert.strictEqual(
+                extractVideoId('https://youtu.be/dQw4w9WgXcQ?si=sometoken&t=42#comments'),
                 'dQw4w9WgXcQ',
             );
         });
@@ -60,6 +81,22 @@ describe('extractVideoId', () => {
             assert.throws(
                 () => extractVideoId('tooshort'),
                 { message: 'video URL is invalid: tooshort' },
+            );
+        });
+
+        it('throws for a URL from m.youtube.com (mobile) URL with invalid v query param', () => {
+            const invalidUrl = 'https://m.youtube.com/watch?v=123dQw4w9WgXcQ&pp=ajebQw%3D%3D#something';
+            assert.throws(
+                () => extractVideoId(invalidUrl),
+                { message: `video URL is invalid: ${invalidUrl}` },
+            );
+        });
+
+        it('throws for a URL from youtu.be (mobile) URL with invalid path', () => {
+            const invalidUrl = 'https://youtu.be/123dQw4w9WgXcQ';
+            assert.throws(
+                () => extractVideoId(invalidUrl),
+                { message: `video URL is invalid: ${invalidUrl}` },
             );
         });
     });

@@ -96,22 +96,36 @@ async function extractFromVideo({
     };
 }
 
+const VIDEO_ID_RE = /^[a-zA-Z0-9_-]{11}$/;
+
 function extractVideoId(videoUrl) {
     if (!videoUrl || typeof videoUrl !== 'string') {
         throw new Error('video URL is missing');
     }
-    if (videoUrl.includes('youtube.com')) {
-        const match = videoUrl.match(/v=([a-zA-Z0-9_-]{11})/);
-        if (match) {
-            return match[1];
+
+    let parsed;
+    try {
+        parsed = new URL(videoUrl);
+    } catch {
+        // Not a valid URL — accept a bare 11-character video ID
+        if (videoUrl.length === 11) {
+            return videoUrl;
         }
-    } else if (videoUrl.includes('youtu.be')) {
-        const match = videoUrl.match(/\.be\/([a-zA-Z0-9_-]{11})/);
-        if (match) {
-            return match[1];
+        throw new Error(`video URL is invalid: ${videoUrl}`);
+    }
+
+    const { hostname, pathname, searchParams } = parsed;
+
+    if (hostname.endsWith('youtube.com')) {
+        const v = searchParams.get('v');
+        if (v && VIDEO_ID_RE.test(v)) {
+            return v;
         }
-    } else if (videoUrl.length === 11) {
-        return videoUrl;
+    } else if (hostname === 'youtu.be') {
+        const id = pathname.slice(1);
+        if (VIDEO_ID_RE.test(id)) {
+            return id;
+        }
     }
 
     throw new Error(`video URL is invalid: ${videoUrl}`);
