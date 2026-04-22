@@ -12,81 +12,86 @@ import { extractFromVideo } from './yt-subs-sdk.js';
 const transportArg = process.argv[2] ?? 'stdio';
 
 const server = new McpServer({
-    name: 'ytsubs-mcp',
-    version: pkg.version,
+  name: 'ytsubs-mcp',
+  version: pkg.version,
 });
 
 server.registerTool(
-    'youtube-transcript-extract',
-    {
-        description: 'Extracts transcript/ captions/ subtitles from youtube videos (plus metadata)',
-        inputSchema: z.object({
-            videoUrl: z.string().meta({ description: 'Youtube URL or video ID' }),
-            onlyText: z.boolean().default(true).meta({ description: 'When false, includes title, description, and metadata' }),
-        }),
-        annotations: {
-            readOnlyHint: true,
-            destructiveHint: false,
-            idempotentHint: true,
-            openWorldHint: true,
+  'youtube-transcript-extract',
+  {
+    description: 'Extracts transcript/ captions/ subtitles from youtube videos (plus metadata)',
+    inputSchema: z.object({
+      videoUrl: z.string().meta({ description: 'Youtube URL or video ID' }),
+      onlyText: z
+        .boolean()
+        .default(true)
+        .meta({ description: 'When false, includes title, description, and metadata' }),
+    }),
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+  },
+  async ({ videoUrl, onlyText }) => {
+    const result = await extractFromVideo({
+      videoUrl,
+    });
+    if (result.err) {
+      return {
+        isError: true,
+        content: [{ type: 'text', text: result.err }],
+      };
+    }
+    let out;
+    if (onlyText) {
+      out = result.text;
+    } else {
+      const { title, description, metadata, text } = result;
+      out = JSON.stringify({ title, description, metadata, text });
+    }
+    return {
+      content: [
+        {
+          type: 'text',
+          text: out,
         },
-    },
-    async ({ videoUrl, onlyText }) => {
-        const result = await extractFromVideo({
-            videoUrl,
-        });
-        if (result.err) {
-            return {
-                isError: true,
-                content: [{ type: 'text', text: result.err }],
-            };
-        }
-        let out;
-        if (onlyText) {
-            out = result.text;
-        } else {
-            const { title, description, metadata, text } = result;
-            out = JSON.stringify({ title, description, metadata, text });
-        }
-        return {
-            content: [{
-                type: 'text',
-                text: out,
-            }],
-        };
-    },
+      ],
+    };
+  },
 );
 
 async function runWithStdio() {
-    const transport = new StdioServerTransport();
-    await server.connect(transport);
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
 }
 
 async function runWithHttp() {
-    const transport = new StreamableHTTPServerTransport({
-        sessionIdGenerator: () => randomUUID(),
-    });
-    await server.connect(transport);
+  const transport = new StreamableHTTPServerTransport({
+    sessionIdGenerator: () => randomUUID(),
+  });
+  await server.connect(transport);
 
-    const httpServer = createServer((req, res) => {
-        transport.handleRequest(req, res);
-    });
+  const httpServer = createServer((req, res) => {
+    transport.handleRequest(req, res);
+  });
 
-    await new Promise((resolve, reject) => {
-        httpServer.on('error', reject);
-        httpServer.listen(0, '127.0.0.1', () => {
-            const { port } = httpServer.address();
-            process.stderr.write(`LISTEN ${port}\n`);
-            resolve();
-        });
+  await new Promise((resolve, reject) => {
+    httpServer.on('error', reject);
+    httpServer.listen(0, '127.0.0.1', () => {
+      const { port } = httpServer.address();
+      process.stderr.write(`LISTEN ${port}\n`);
+      resolve();
     });
+  });
 }
 
 if (transportArg === 'stdio') {
-    runWithStdio().catch(console.error);
+  runWithStdio().catch(console.error);
 } else if (transportArg === 'http') {
-    runWithHttp().catch(console.error);
+  runWithHttp().catch(console.error);
 } else {
-    process.exitCode = 1;
-    console.error(`Error: invalid transport "${transportArg}": expected "stdio" or "http"`);
+  process.exitCode = 1;
+  console.error(`Error: invalid transport "${transportArg}": expected "stdio" or "http"`);
 }
