@@ -62,11 +62,23 @@ server.registerTool(
   },
 );
 
+/**
+ * Starts the MCP server using the stdio transport.
+ * Suitable for use with MCP clients that communicate via stdin/stdout,
+ * (any client using `StdioClientTransport`).
+ * @returns {Promise<void>}
+ */
 async function runWithStdio() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 }
 
+/**
+ * Starts the MCP server using the Streamable HTTP transport.
+ * Binds to an OS-assigned port on `127.0.0.1`. Once the server is ready,
+ * writes `LISTEN <port>` to stderr so that the caller can discover the port.
+ * @returns {Promise<void>}
+ */
 async function runWithHttp() {
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: () => randomUUID(),

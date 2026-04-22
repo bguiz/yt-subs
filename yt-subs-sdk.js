@@ -14,7 +14,31 @@ import {
   YoutubeTranscriptInvalidLangError,
 } from 'youtube-transcript-plus';
 
-async function extractFromVideo({ videoUrl, options = {}, _deps = {} }) {
+/**
+ * Extracts the transcript and metadata from a Youtube video.
+ * Returns `{ err }` on failure rather than throwing, so callers must check
+ * `result.err` *before* accessing other fields.
+ * @param {object} params - Input parameters.
+ * @param {string} params.videoUrl - Youtube URL, schemeless URL, or bare 11-character video ID.
+ * @param {object} [params.options] - Extraction options.
+ * - boolean noCache - Disable the filesystem cache; default: false.
+ * - boolean noRetry - Disable automatic retries; default: false.
+ * - string language - 2-letter language code (BCP-47) for the transcript. default: 'en'.
+ * - 'text'|'srt'|'vtt' - textType - Transcript format; default 'text'.
+ * @param {object} [params._deps] - Dependency overrides used in tests.
+ * @returns {Promise<{videoUrl: string, title: string, description: string, metadata: object, text: string}|{err: string}>}
+ *   Resolves to the extraction result on success, or `{ err }` on failure.
+ */
+async function extractFromVideo({
+  videoUrl,
+  options = {
+    noCache: false,
+    noRetry: false,
+    language: 'en',
+    textType: 'text',
+  },
+  _deps = {},
+}) {
   const {
     fetchTranscript: _fetchTranscript = fetchTranscript,
     toPlainText: _toPlainText = toPlainText,
@@ -97,6 +121,15 @@ async function extractFromVideo({ videoUrl, options = {}, _deps = {} }) {
 
 const VIDEO_ID_RE = /^[a-zA-Z0-9_-]{11}$/;
 
+/**
+ * Extracts the 11-character video ID from a Youtube URL or bare video ID.
+ * Accepts full URLs (`https://www.youtube.com/watch?v=...`), short URLs
+ * (`https://youtu.be/...`), schemeless variants (`youtu.be/...`), and bare
+ * 11-character video IDs. Extra query parameters and URL fragments are ignored.
+ * @param {string} videoUrl - Youtube URL, schemeless URL, or bare 11-character video ID.
+ * @returns {string} The extracted 11-character video ID.
+ * @throws {Error} If `videoUrl` is missing, not a string, or cannot be parsed as a valid Youtube URL or video ID.
+ */
 function extractVideoId(videoUrl) {
   if (!videoUrl || typeof videoUrl !== 'string') {
     throw new Error('video URL is missing');
@@ -136,10 +169,24 @@ function extractVideoId(videoUrl) {
   throw new Error(`video URL is invalid: ${videoUrl}`);
 }
 
+/**
+ * Returns only the transcript text from an extraction result.
+ * @param {{text: string}} result - The extraction result returned by {@link extractFromVideo}.
+ * @returns {string} The plain transcript text.
+ */
 function outputTextOnly(result) {
   return result.text;
 }
 
+/**
+ * Formats an extraction result as a Markdown document.
+ * Includes the video title as an H1 heading, an optional thumbnail image
+ * (when a thumbnail of >= 480px wide is available), a retrieval
+ * attribution line, and sections for metadata, description, and transcript text.
+ * @param {{videoUrl: string, title: string, description: string, metadata: object, text: string}} result
+ *   The extraction result returned by {@link extractFromVideo}.
+ * @returns {string} The formatted Markdown string.
+ */
 function outputAsMarkdown(result) {
   const displayDate = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
   const thumbnailUrl = result.metadata?.thumbnails?.filter((tn) => tn.width >= 480)[0]?.url;
@@ -159,6 +206,12 @@ function outputAsMarkdown(result) {
   return parts.join('');
 }
 
+/**
+ * Prints the extraction result to stdout as a markdown.
+ * @param {{videoUrl: string, title: string, description: string, metadata: object, text: string}} result
+ *   The extraction result returned by {@link extractFromVideo}.
+ * @returns {void}
+ */
 function printResult(result) {
   console.log(outputAsMarkdown(result));
 }
