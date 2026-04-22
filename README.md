@@ -231,6 +231,31 @@ await client.callTool({
 
 Your contributions are welcome!
 
+### Development tooling
+
+The following commands are available for local development.
+
+| Command | Tool | What it does |
+|---|---|---|
+| `npm run lint:comment` | `eslint`, `eslint-plugin-jsdoc` | Checks JSDoc comment structure |
+| `npm run lint:code` | `biome` | Validates code lint rules |
+| `npm run format:check` | `biome` | Validate formatting |
+| `npm run format:write` | `biome` | Same as `format:check`, then overwrites files in place |
+| `npm run test` | `node` | Runs all tests |
+| `npm run test:unit` | `node` | Runs only unit tests |
+| `npm run test:e2e` | `node` | Runs only e2e tests |
+| `npm run coverage` | `node` | Same as `test`, and adds line/branch/function code coverage report |
+| `npm run coverage:lcov` | `node` | Same as `coverage`, also writes `coverage.lcov` for upload to Codecov |
+
+
+A subset of these checks also run automatically as a **pre-push git hook** (via Husky).
+To bypass temporarily (not recommended): `git push --no-verify`.
+To invoke them manually:
+
+```shell
+npm run check:prepush
+```
+
 ### Submitting an update
 
 Base set up:
@@ -276,6 +301,10 @@ git push origin ${YOUR_BRANCH_NAME}
 
 Then [submit a Github PR](https://github.com/bguiz/ytsubs/pulls)
 based on the branch that you have just pushed.
+
+When you `git push` your branch associated with a PR,
+this project will kick off a Github CI workflow,
+which you can find in [`.github/workflows/ci.yml`](./.github/workflows/ci.yml).
 
 ### Submitting a request
 

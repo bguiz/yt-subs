@@ -30,17 +30,30 @@
   "author": "bguiz",
   "type": "module",
   "scripts": {
+    "cli": "node yt-subs-cli.js",
+    "mcp:stdio": "node yt-subs-mcp.js stdio",
+    "mcp:http": "node yt-subs-mcp.js http",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "node --test yt-subs.*.unit.test.js",
     "test:e2e": "node --test yt-subs.*.e2e.test.js",
     "coverage": "node --test --experimental-test-coverage --test-coverage-include=\"yt-subs-*.js\" yt-subs.*.unit.test.js",
-    "cli": "node yt-subs-cli.js",
-    "mcp:stdio": "node yt-subs-mcp.js stdio",
-    "mcp:http": "node yt-subs-mcp.js http",
-    "list-files": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz"
+    "lint:comment": "eslint .",
+    "lint:code": "biome lint .",
+    "format:check": "biome format .",
+    "format:write": "biome format --write .",
+    "coverage:lcov": "node --test --experimental-test-coverage --test-coverage-include=\"yt-subs-*.js\" --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage.lcov yt-subs.*.unit.test.js",
+    "check:prepush": "npm run lint:comment && npm run lint:code && npm run format:check && npm run coverage",
+    "list-files": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz",
+    "prepare": "husky"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.29.0",
     "youtube-transcript-plus": "2.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.12",
+    "eslint": "10.2.1",
+    "eslint-plugin-jsdoc": "62.9.0",
+    "husky": "9.1.7"
   }
 }
