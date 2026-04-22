@@ -45,6 +45,7 @@ describe('extractFromVideo', () => {
             _deps: deps,
         });
 
+        assert.strictEqual(result.videoUrl, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
         assert.strictEqual(result.title, 'Never Gonna Give You Up');
         assert.strictEqual(result.description, 'Official Rick Astley music video');
         assert.strictEqual(result.text, fakeTranscriptText);
@@ -302,6 +303,14 @@ describe('extractFromVideo', () => {
                 _deps: deps,
             });
             assert.strictEqual(result.err, 'An unexpected error occurred: network timeout');
+        });
+
+        it('returns { err } for an invalid video URL instead of throwing', async () => {
+            const result = await extractFromVideo({
+                videoUrl: 'https://vimeo.com/12345',
+                _deps: errorDepsBase,
+            });
+            assert.match(result.err, /video URL is invalid/);
         });
     });
 });

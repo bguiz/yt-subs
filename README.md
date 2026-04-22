@@ -70,6 +70,7 @@ const result = await extractFromVideo({
 ```
 
 The result object will contain the following fields:
+- `videoUrl`: The video URL or ID that was passed in
 - `title`: Video title
 - `metadata`: Miscellaneous info (video ID, thumbnail URLs, etc.)
 - `description`: Video description

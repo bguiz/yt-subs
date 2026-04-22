@@ -6,13 +6,14 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { z } from 'zod';
 
+import pkg from './package.json' with { type: 'json' };
 import { extractFromVideo } from './yt-subs-sdk.js';
 
 const transportArg = process.argv[2] ?? 'stdio';
 
 const server = new McpServer({
     name: 'ytsubs-mcp',
-    version: '0.0.1', // TODO extract from package.json
+    version: pkg.version,
 });
 
 server.registerTool(
@@ -34,6 +35,12 @@ server.registerTool(
         const result = await extractFromVideo({
             videoUrl,
         });
+        if (result.err) {
+            return {
+                isError: true,
+                content: [{ type: 'text', text: result.err }],
+            };
+        }
         let out;
         if (onlyText) {
             out = result.text;

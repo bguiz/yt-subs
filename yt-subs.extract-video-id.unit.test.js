@@ -53,6 +53,20 @@ describe('extractVideoId', () => {
                 'dQw4w9WgXcQ',
             );
         });
+
+        it('extracts ID from schemeless youtu.be short URL', () => {
+            assert.strictEqual(
+                extractVideoId('youtu.be/dQw4w9WgXcQ'),
+                'dQw4w9WgXcQ',
+            );
+        });
+
+        it('extracts ID from schemeless m.youtube.com URL', () => {
+            assert.strictEqual(
+                extractVideoId('m.youtube.com/watch?v=dQw4w9WgXcQ'),
+                'dQw4w9WgXcQ',
+            );
+        });
     });
 
     describe('invalid inputs', () => {
@@ -81,6 +95,13 @@ describe('extractVideoId', () => {
             assert.throws(
                 () => extractVideoId('tooshort'),
                 { message: 'video URL is invalid: tooshort' },
+            );
+        });
+
+        it('throws for an 11-character string containing invalid characters', () => {
+            assert.throws(
+                () => extractVideoId('hello world'),
+                { message: 'video URL is invalid: hello world' },
             );
         });
 
