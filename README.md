@@ -131,6 +131,19 @@ npx -y -p ytsubs ytsubs-mcp stdio # for stdio transport
 npx -y -p ytsubs ytsubs-mcp http # for streamable HTTP transport
 ```
 
+**Environment variables** (HTTP transport only):
+
+| Variable | Default | Description |
+|---|---|---|
+| `YTSUBS_PORT` | `0` | Port to listen on. `0` assigns an ephemeral OS port. |
+| `YTSUBS_HOST` | `127.0.0.1` | Interface to bind. Use `0.0.0.0` for all interfaces. |
+
+Example — bind to a fixed port on all interfaces:
+
+```shell
+YTSUBS_HOST=0.0.0.0 YTSUBS_PORT=3456 npx -y -p ytsubs ytsubs-mcp http
+```
+
 **Inspector**:
 To connect using the MCP inspector tool:
 
@@ -214,7 +227,7 @@ const transport = new StreamableHTTPClientTransport(
 );
 ```
 
-Then create na MCP client that connects to the `transport`.
+Then create an MCP client that connects to the `transport`.
 
 ```js
 client = new Client({ name: 'test-client', version: '0.0.1' });
@@ -227,6 +240,39 @@ await client.callTool({
     arguments: { videoUrl: VIDEO_URL },
 });
 ```
+
+**Docker**:
+
+Build the image:
+
+```shell
+docker build -t ytsubs .
+```
+
+Run the MCP HTTP server in a container, with a persistent cache volume and port binding:
+
+```shell
+docker run --rm \
+  -v ~/.yt-subs-cache:/root/.yt-subs-cache \
+  -p 3456:3456 \
+  ytsubs
+```
+
+The server listens on `http://localhost:3456/mcp` (bound to all interfaces inside the container via `YTSUBS_HOST=0.0.0.0`).
+
+### OpenAPI spec
+
+An [OpenAPI 3.1.0](https://spec.openapis.org/oas/v3.1.0) spec for the MCP HTTP server is provided in [`openapi.yaml`](./openapi.yaml).
+
+To browse it interactively using [Swagger UI](https://swagger.io/tools/swagger-ui/)
+(start the MCP HTTP server first, then run):
+
+```shell
+npm run docs:api
+```
+
+Then open `http://127.0.0.1:8080/` in a browser.
+Set the port with `YTSUBS_DOCS_PORT` (default `8080`).
 
 ## Contributing
 
@@ -245,8 +291,10 @@ The following commands are available for local development.
 | `npm run test` | `node` | Runs all tests |
 | `npm run test:unit` | `node` | Runs only unit tests |
 | `npm run test:e2e` | `node` | Runs only e2e tests |
+| `npm run test:e2e-extended` | `node` | Runs e2e tests, which are not intended for CI |
+| `npm run docs:api` | `node` | Serves OpenAPI spec UI at `http://127.0.0.1:8080/` |
 | `npm run coverage` | `node` | Same as `test`, and adds line/branch/function code coverage report |
-| `npm run coverage:lcov` | `node` | Same as `coverage`, also writes `coverage.lcov` for upload to Codecov |
+| `npm run coverage:lcov` | `node` | Same as `coverage`, also writes `coverage.lcov`, intended for upload to Codecov |
 
 
 A subset of these checks also run automatically as a **pre-push git hook** (via Husky).
