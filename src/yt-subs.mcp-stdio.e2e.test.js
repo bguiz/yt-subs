@@ -61,6 +61,18 @@ describe('ytsubs-mcp e2e', () => {
     assert.ok(response.content[0].text.length > 0, 'transcript text should be non-empty');
   });
 
+  it('forwards language and textType options — SRT output when textType: srt', { timeout: 30000 }, async () => {
+    const response = await client.callTool({
+      name: 'youtube-transcript-extract',
+      arguments: { videoUrl: VIDEO_URL, onlyText: true, language: 'en', textType: 'srt' },
+    });
+
+    assert.ok(!response.isError, `unexpected error: ${JSON.stringify(response.content)}`);
+    assert.strictEqual(response.content.length, 1);
+    assert.strictEqual(response.content[0].type, 'text');
+    assert.match(response.content[0].text, /^\d+\n\d{2}:\d{2}:\d{2},\d{3} --> /);
+  });
+
   it('returns full result as JSON with onlyText: false', { timeout: 30000 }, async () => {
     const response = await client.callTool({
       name: 'youtube-transcript-extract',
