@@ -7,19 +7,25 @@
     "node": ">=22"
   },
   "bin": {
-    "ytsubs": "yt-subs-cli.js",
-    "ytsubs-mcp": "yt-subs-mcp.js"
+    "ytsubs": "src/yt-subs-cli.js",
+    "ytsubs-mcp": "src/yt-subs-mcp.js",
+    "ytsubs-server": "src/yt-subs-server.js",
+    "ytsubs-docs-openapi": "src/yt-subs-docs-openapi.js"
   },
-  "main": "yt-subs-sdk.js",
+  "main": "src/yt-subs-sdk.js",
   "exports": {
-    ".": "./yt-subs-sdk.js",
-    "./cli": "./yt-subs-cli.js",
-    "./mcp": "./yt-subs-mcp.js"
+    ".": "./src/yt-subs-sdk.js",
+    "./cli": "./src/yt-subs-cli.js",
+    "./mcp": "./src/yt-subs-mcp.js",
+    "./server": "./src/yt-subs-server.js",
+    "./docs-openapi": "./src/yt-subs-docs-openapi.js"
   },
   "files": [
-    "/yt-subs-sdk.js",
-    "/yt-subs-cli.js",
-    "/yt-subs-mcp.js"
+    "/src/yt-subs-sdk.js",
+    "/src/yt-subs-cli.js",
+    "/src/yt-subs-mcp.js",
+    "/src/yt-subs-server.js",
+    "/src/yt-subs-docs-openapi.js"
   ],
   "license": "MIT",
   "author": "bguiz",
@@ -38,18 +44,23 @@
     "url": "git+https://github.com/bguiz/yt-subs.git"
   },
   "scripts": {
-    "cli": "node yt-subs-cli.js",
-    "mcp:stdio": "node yt-subs-mcp.js stdio",
-    "mcp:http": "node yt-subs-mcp.js http",
+    "cli": "node src/yt-subs-cli.js",
+    "mcp:stdio": "node src/yt-subs-mcp.js stdio",
+    "mcp:http": "npm run api:http",
+    "mcp:http-fixed": "npm run api:http-fixed",
+    "api:http": "node src/yt-subs-server.js",
+    "api:http-fixed": "YTSUBS_HOST=127.0.0.1 YTSUBS_PORT=3456 node src/yt-subs-server.js",
     "test": "npm run test:unit && npm run test:e2e",
-    "test:unit": "node --test yt-subs.*.unit.test.js",
-    "test:e2e": "node --test yt-subs.*.e2e.test.js",
-    "coverage": "node --test --experimental-test-coverage --test-coverage-include=\"yt-subs-*.js\" yt-subs.*.unit.test.js",
+    "test:unit": "node --test src/yt-subs.*.unit.test.js",
+    "test:e2e": "node --test src/yt-subs.*.e2e.test.js",
+    "test:e2e-extended": "node --test src/yt-subs.*.e2e.test.js src/yt-subs.*.e2e.extended.test.js",
+    "docs:api": "node src/yt-subs-docs-openapi.js",
+    "coverage": "node --test --experimental-test-coverage --test-coverage-include=\"src/yt-subs-*.js\" src/yt-subs.*.unit.test.js",
     "lint:comment": "eslint .",
     "lint:code": "biome lint .",
     "format:check": "biome format .",
     "format:write": "biome format --write .",
-    "coverage:lcov": "node --test --experimental-test-coverage --test-coverage-include=\"yt-subs-*.js\" --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage.lcov yt-subs.*.unit.test.js",
+    "coverage:lcov": "mkdir -p dist/coverage && node --test --experimental-test-coverage --test-coverage-include=\"src/yt-subs-*.js\" --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=dist/coverage/coverage.lcov src/yt-subs.*.unit.test.js",
     "check:prepush": "npm run lint:comment && npm run lint:code && npm run format:check && npm run coverage",
     "list-files": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz",
     "prepare": "husky"
